@@ -1,0 +1,52 @@
+// See https://github.com/maiflai/gradle-scalatest
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.github.maiflai:gradle-scalatest:0.14"
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'scala'
+apply plugin: "com.github.maiflai.scalatest"
+
+dependencies {
+    testCompile 'org.scalatest:scalatest_2.11:3.0.1'
+    testCompile 'org.seleniumhq.selenium:selenium-java:2.35.0'
+    testCompile 'com.typesafe:config:1.3.1'
+    testRuntime 'org.pegdown:pegdown:1.4.2'
+}
+
+sourceSets {
+    test {
+        scala {
+            srcDirs = ['tests']
+        }
+        resources {
+            srcDirs = ['config']
+        }
+    }
+}
+
+test {
+    maxParallelForks = 1
+}
+
+test.doFirst {
+    def chromeDriver = System.getProperty("os.name").startsWith("Windows") ? "chromedriver.exe" : "chromedriver"
+    systemProperty 'webdriver.chrome.driver', ("bin/" + chromeDriver)
+    ['config.file'].each { key ->
+        def value = System.getProperty(key)
+        if (value != null) {
+            systemProperty key, value
+        }
+    }
+}
