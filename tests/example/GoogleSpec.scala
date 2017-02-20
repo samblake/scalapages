@@ -10,7 +10,7 @@ import org.scalatest.selenium.Chrome
   * A base spec supplying the implicit [[WebDriver]] and [[BaseUrl]], and the [[GooglePages]].
   * Mixes in the [[PageNavigation]] allowing specs to use the enhanced go object.
   */
-class GoogleNavigation extends FlatSpec with PageNavigation {
+class GoogleSpec extends FlatSpec with PageNavigation {
 
   implicit val driver: WebDriver = Chrome.webDriver
   implicit val baseUrl: BaseUrl = "http://www.google.com"
