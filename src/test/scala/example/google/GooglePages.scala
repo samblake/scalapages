@@ -1,4 +1,4 @@
-package github.samblake.scalatest.page.example
+package example.google
 
 import github.samblake.scalatest.page.WebPage
 import github.samblake.scalatest.page.WebPage.BaseUrl
@@ -19,7 +19,9 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
   def home() = new Home()
   def results(term: String) = new Results(term)
 
-  /** The home page. */
+  /**
+    * The home page.
+    */
   class Home extends WebPage[Home] {
     override def path = "webhp"
 
@@ -29,11 +31,13 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
       * Performs a search. As this method will navigate to another page it returns that page.
       * This allows chaining of the actions that will be performed on the subsequent page.
       */
-    def search(term: String) = {
-      click on searchField
-      textField(searchField).value = term
-      submit()
-      results(term)
+    object search {
+      def using(term: String):Results = {
+        click on searchField
+        textField(searchField).value = term
+        submit()
+        results(term)
+      }
     }
   }
 
@@ -44,9 +48,13 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
   class Results(term: String) extends WebPage[Results] {
     override def path = "search"
 
-    /** Validates the page title is as expected. */
-    def checkTitle() = eventually (timeout(3 seconds)) {
-      pageTitle should be (term + " - Google Search")
+    /**
+      * Validates the page title is as expected.
+      */
+    object check {
+      def title = eventually (timeout(3 seconds)) {
+        pageTitle should be (term + " - Google Search")
+      }
     }
   }
 }

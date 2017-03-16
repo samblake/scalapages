@@ -1,4 +1,4 @@
-package github.samblake.scalatest.page.example
+package example.google
 
 import github.samblake.scalatest.page.PageNavigation
 import github.samblake.scalatest.page.WebPage.BaseUrl

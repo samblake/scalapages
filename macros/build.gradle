@@ -1,0 +1,14 @@
+configurations {
+    scalaCompiler
+}
+configurations.scalaCompiler.transitive = false
+
+dependencies {
+    compile "org.scalameta:paradise_2.11.8:3.0.0-M7"
+    compile "org.scalameta:scalameta_2.11:1.6.0"
+    scalaCompiler "org.scalameta:paradise_2.11.8:3.0.0-M7"
+}
+
+def String scalaCompilerOptions="-Xplugin:$configurations.scalaCompiler.singleFile.path"
+compileScala.scalaCompileOptions.additionalParameters = [scalaCompilerOptions]
+compileTestScala.scalaCompileOptions.additionalParameters = [scalaCompilerOptions]
