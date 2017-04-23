@@ -1,7 +1,5 @@
 package github.samblake.scalatest.page.example
 
-import github.samblake.scalatest.page.WebPage.unchecked
-
 /**
   * The example from http://www.scalatest.org/user_guide/using_selenium reworked.
   */

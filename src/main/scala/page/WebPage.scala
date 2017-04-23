@@ -1,6 +1,6 @@
 package github.samblake.scalatest.page
 
-import github.samblake.scalatest.page.WebPage.{BaseUrl, UnvalidatedPage}
+import github.samblake.scalatest.page.WebPage.BaseUrl
 import org.openqa.selenium.WebDriver
 import org.scalatest.Matchers
 import org.scalatest.concurrent.Eventually
