@@ -1,10 +1,11 @@
 package github.samblake.scalatest.page.example
 
-import github.samblake.scalatest.page.PageNavigation
+
 import github.samblake.scalatest.page.WebPage.BaseUrl
 import org.openqa.selenium.WebDriver
 import org.scalatest.FlatSpec
 import org.scalatest.selenium.Chrome
+import page.PageNavigation
 
 /**
   * A base spec supplying the implicit [[WebDriver]] and [[BaseUrl]], and the [[GooglePages]].

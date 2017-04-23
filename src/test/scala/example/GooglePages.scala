@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBrowser {
 
   // Methods to provide access to the pages
-  def home() = new Home()
+  def home():Home = new Home()
   def results(term: String) = new Results(term)
 
   /** The home page. */
