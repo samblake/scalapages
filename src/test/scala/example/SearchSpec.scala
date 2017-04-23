@@ -9,7 +9,7 @@ class SearchSpec extends GoogleSpec {
   import pages._
 
   "After searching the results page" should "have the correct title" in {
-    (go to unchecked(home)) and { home =>
+    go to home and { home =>
       home search "Cheese!"
     } lastly { results =>
       results checkTitle

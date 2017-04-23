@@ -35,6 +35,8 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
       submit()
       results(term)
     }
+
+    override def check()(implicit webDriver: WebDriver):Unit = currentUrl should include (path)
   }
 
   /**
