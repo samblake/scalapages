@@ -16,4 +16,4 @@ Page specific logic is encapsulated in Page classes. Actions to be performed on 
 
 ### To Do ###
 
-Scope Injection: boilerplate-free scope propagation a la [DSL Paradise](https://github.com/dsl-paradise/dsl-paradise).
+Scope Injection: boilerplate-free scope propagation à la [DSL Paradise](https://github.com/dsl-paradise/dsl-paradise).
