@@ -11,5 +11,9 @@ Page specific logic is encapsulated in Page classes. Actions to be performed on 
     } lastly { > =>
       > checkTitle
     }
-  }
+  } 
 ```
+
+### To Do ###
+
+Scope Injection: boilerplate-free scope propagation a la [DSL Paradise](https://github.com/dsl-paradise/dsl-paradise).
