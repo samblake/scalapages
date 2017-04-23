@@ -47,6 +47,7 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
 
   protected def check()(implicit webDriver: WebDriver):Unit = currentUrl should startWith (url)
 
+  /** Creates a [[github.samblake.scalatest.page.WebPage.ValidatingPage]] that performs no validation. **/
   def unchecked = new UnvalidatedPage[T](this)
 }
 
@@ -55,9 +56,17 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
   */
 object WebPage {
 
+  /** Implicit method to convert a [[WebPage]] into a [[ValidatedPage]], the default type of [[ValidatingPage]]. **/
   implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): ValidatingPage[T] = new ValidatedPage(webPage)
+
   def unchecked[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): UnvalidatedPage[T] = new UnvalidatedPage(webPage)
 
+  /**
+    * Performs simple validation of a page after it has been navigated to.
+    * @param webPage The page to validate
+    * @param baseUrl The baseUrl of the page
+    * @tparam T The type of the [[WebPage]]
+    */
   abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) {
     def url: String = webPage.url
     def check(): Unit
@@ -67,10 +76,12 @@ object WebPage {
     }
   }
 
+  /** Performs the WebPages default validation. **/
   class ValidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends ValidatingPage(webPage) {
     override def check(): Unit = webPage.check()
   }
 
+  /** Performs no validation. **/
   class UnvalidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends ValidatingPage(webPage) {
     override def check(): Unit = Unit
   }
