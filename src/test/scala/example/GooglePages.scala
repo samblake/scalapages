@@ -36,6 +36,7 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
       results(term)
     }
 
+    // May be forwarded to local version i.e. google.co.uk
     override def check()(implicit webDriver: WebDriver):Unit = currentUrl should include (path)
   }
 

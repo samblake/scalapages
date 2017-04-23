@@ -1,6 +1,6 @@
 package github.samblake.scalatest.page
 
-import github.samblake.scalatest.page.WebPage.BaseUrl
+import github.samblake.scalatest.page.WebPage.{BaseUrl, UnvalidatedPage}
 import org.openqa.selenium.WebDriver
 import org.scalatest.Matchers
 import org.scalatest.concurrent.Eventually
@@ -16,6 +16,7 @@ import org.scalatest.selenium.{Page, WebBrowser}
   */
 abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
       with Matchers with WebBrowser with Eventually {
+  self: T =>
 
   override val url: String = baseUrl + "/" + path
   def path: String
@@ -26,7 +27,7 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
     * @tparam P The returned [[WebPage]]
     * @return The WebPage that the browser will display after the actions have been performed
     */
-  def apply[P <: WebPage[P]](actions: this.type => P):P = actions(this)
+  def apply[P <: WebPage[P]](actions: T => P):P = actions(this)
 
   /**
     * Performs the supplied actions against the page.
@@ -34,7 +35,7 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
     * @tparam P The returned [[WebPage]]
     * @return The WebPage that the browser will display after the actions have been performed
     */
-  def and[P <: WebPage[P]](actions: this.type => P):P = actions(this)
+  def and[P <: WebPage[P]](actions: T => P):P = actions(this)
 
   /**
     * Performs the supplied actions against the page. Unlike the other methods that take actions
@@ -42,20 +43,11 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
     * therefore there will be no subsequent page to navigate to.
     * @param actions The actions to perform
     */
-  def lastly[P <: WebPage[P]](actions: this.type => Unit):Unit = actions(this)
+  def lastly[P <: WebPage[P]](actions: T => Unit):Unit = actions(this)
 
   protected def check()(implicit webDriver: WebDriver):Unit = currentUrl should startWith (url)
 
-  //def unchecked = new UnvalidatedPage[this.type](this)
-}
-
-abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends WebPage[T] {
-  override def path: String = webPage.path
-  def doValidate(): Unit
-  def validate: T = {
-    doValidate()
-    webPage
-  }
+  def unchecked = new UnvalidatedPage[T](this)
 }
 
 /**
@@ -66,12 +58,21 @@ object WebPage {
   implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): ValidatingPage[T] = new ValidatedPage(webPage)
   def unchecked[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): UnvalidatedPage[T] = new UnvalidatedPage(webPage)
 
+  abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) {
+    def url: String = webPage.url
+    def check(): Unit
+    def validate: T = {
+      check()
+      webPage
+    }
+  }
+
   class ValidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends ValidatingPage(webPage) {
-    override def doValidate(): Unit = webPage.check()
+    override def check(): Unit = webPage.check()
   }
 
   class UnvalidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends ValidatingPage(webPage) {
-    override def doValidate(): Unit = Unit
+    override def check(): Unit = Unit
   }
 
   def apply(baseUrl: BaseUrl, path: String): SimplePage = new SimplePage(path)(baseUrl)

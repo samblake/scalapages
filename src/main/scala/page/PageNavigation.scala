@@ -1,6 +1,7 @@
 package page
 
-import github.samblake.scalatest.page.{ValidatingPage, WebPage}
+import github.samblake.scalatest.page.WebPage.ValidatingPage
+import github.samblake.scalatest.page.WebPage
 import org.openqa.selenium.WebDriver
 
 /**
