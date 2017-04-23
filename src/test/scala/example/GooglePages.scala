@@ -48,8 +48,11 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
     override def path = "search"
 
     /** Validates the page title is as expected. */
-    def checkTitle() = eventually (timeout(3 seconds)) {
+    def check(title: Title) = eventually (timeout(3 seconds)) {
       pageTitle should be (term + " - Google Search")
     }
   }
+
+  class Title
+  def title = new Title
 }

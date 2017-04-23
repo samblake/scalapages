@@ -10,7 +10,7 @@ class SearchSpec extends GoogleSpec {
     go to home and { > =>
       > search "Cheese!"
     } lastly { > =>
-      > checkTitle
+      > check title
     }
   }
 }
