@@ -1,49 +1,90 @@
 package github.samblake.scalatest.page
 
-import org.scalatest.Matchers
-import org.scalatest.selenium.{Page, WebBrowser}
-import WebPage.BaseUrl
+import github.samblake.scalatest.page.WebPage.{BaseUrl, UnvalidatedPage}
 import org.openqa.selenium.WebDriver
+import org.scalatest.Matchers
 import org.scalatest.concurrent.Eventually
+import org.scalatest.selenium.{Page, WebBrowser}
 
 /**
-  * The base page class. The expected URL will be automatically checked against the actual URL
-  * unless [[unchecked]] is called.
+  * The base page class. Provides methods that take thunk containing the actions to be
+  * performed on the page. Should be extended to provide the full path to the page as
+  * well as methods that contain encapsulated, reusable logic.
   *
   * @param baseUrl The base URL of the site under test
   * @tparam T The F-bounded type (T should be the class that extends WebPage)
   */
 abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
-      with Actionable[T] with Matchers with WebBrowser with Eventually {
-  this:T =>
+      with Matchers with WebBrowser with Eventually {
+  self: T =>
+
+  override val url: String = baseUrl + "/" + path
+  def path: String
 
   /**
-    * The URL path that should come after the base URL. This is used to supply to location of
-    * the page if [[PageNavigation.go]] is called or, for validation if any of the [[Actionable]]
-    * methods are called.
-    * @return The path
+    * Performs the supplied actions against the page.
+    * @param actions The actions to perform
+    * @tparam P The returned [[WebPage]]
+    * @return The WebPage that the browser will display after the actions have been performed
     */
-  def path:String
-
-  override val url:String = baseUrl + "/" + path
-
-  override def apply[P <: WebPage[P]](actions: (T) => P)(implicit webDriver: WebDriver):P = and(actions)
-
-  override def and[P <: WebPage[P]](actions: T => P)(implicit webDriver: WebDriver):P = actions(this)
-
-  override def lastly[P <: WebPage[P]](actions: T => Unit)(implicit webDriver: WebDriver):Unit = actions(this)
+  def apply[P <: WebPage[P]](actions: T => P):P = actions(this)
 
   /**
-    * Returns a [[ValidatingPage]] wrapping _this_ that performs no automatic  URL validation.
-    * @return A page that will have no automatic validation is performed against it
+    * Performs the supplied actions against the page.
+    * @param actions The actions to perform
+    * @tparam P The returned [[WebPage]]
+    * @return The WebPage that the browser will display after the actions have been performed
     */
-  def unchecked = new NonValidatingPage[T](this)
+  def and[P <: WebPage[P]](actions: T => P):P = actions(this)
+
+  /**
+    * Performs the supplied actions against the page. Unlike the other methods that take actions
+    * this one doesn't return a page. It is intended to be used by the final page in the chain,
+    * therefore there will be no subsequent page to navigate to.
+    * @param actions The actions to perform
+    */
+  def lastly[P <: WebPage[P]](actions: T => Unit):Unit = actions(this)
+
+  protected def check()(implicit webDriver: WebDriver):Unit = currentUrl should startWith (url)
+
+  /** Creates a [[github.samblake.scalatest.page.WebPage.ValidatingPage]] that performs no validation. **/
+  def unchecked = new UnvalidatedPage[T](this)
 }
 
 /**
   * Provides implicit conversion from a [[String]] to a [[BaseUrl]].
   */
 object WebPage {
+
+  /** Implicit method to convert a [[WebPage]] into a [[ValidatedPage]], the default type of [[ValidatingPage]]. **/
+  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): ValidatingPage[T] = new ValidatedPage(webPage)
+
+  def unchecked[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): UnvalidatedPage[T] = new UnvalidatedPage(webPage)
+
+  /**
+    * Performs simple validation of a page after it has been navigated to.
+    * @param webPage The page to validate
+    * @param baseUrl The baseUrl of the page
+    * @tparam T The type of the [[WebPage]]
+    */
+  abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) {
+    def url: String = webPage.url
+    def check(): Unit
+    def validate: T = {
+      check()
+      webPage
+    }
+  }
+
+  /** Performs the WebPages default validation. **/
+  class ValidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends ValidatingPage(webPage) {
+    override def check(): Unit = webPage.check()
+  }
+
+  /** Performs no validation. **/
+  class UnvalidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends ValidatingPage(webPage) {
+    override def check(): Unit = Unit
+  }
 
   def apply(baseUrl: BaseUrl, path: String): SimplePage = new SimplePage(path)(baseUrl)
 
@@ -55,7 +96,7 @@ object WebPage {
     * @param baseUrl The base URL
     */
   class SimplePage(p: String)(implicit baseUrl: BaseUrl) extends WebPage[SimplePage] {
-    override def path = p
+    override def path: String = p
   }
 
   /**
