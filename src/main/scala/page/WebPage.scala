@@ -56,11 +56,6 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
   */
 object WebPage {
 
-  /** Implicit method to convert a [[WebPage]] into a [[ValidatedPage]], the default type of [[ValidatingPage]]. **/
-  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): ValidatingPage[T] = new ValidatedPage(webPage)
-
-  def unchecked[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl, webDriver: WebDriver): UnvalidatedPage[T] = new UnvalidatedPage(webPage)
-
   /**
     * Performs simple validation of a page after it has been navigated to.
     * @param webPage The page to validate
