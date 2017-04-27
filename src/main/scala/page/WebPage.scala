@@ -172,5 +172,6 @@ trait Actionable[T <: WebPage[T]] {
     * @param actions The actions to perform
     */
   def lastly(actions: T => Unit):Unit
-
 }
+
+case class Failable[S <: WebPage[S], F <: WebPage[F]](success: S, failure: F)
