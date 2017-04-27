@@ -174,4 +174,15 @@ trait Actionable[T <: WebPage[T]] {
   def lastly(actions: T => Unit):Unit
 }
 
+/**
+  * Models the result of an action that results in the browser being forwarded to different pages
+  * depending on whether the action was sucessful or not. For example submission of a form that
+  * returns the user to the originating page if validation fails.
+  *
+  * By default the Failable will be converted to the [[success]] [[WebPage]] by the implicit
+  * [[page.PageNavigation.failable2ValidatingPage]] function.
+  *
+  * @param success
+  * @param failure
+  */
 case class Failable[S <: WebPage[S], F <: WebPage[F]](success: S, failure: F)
