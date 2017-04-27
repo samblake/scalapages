@@ -1,7 +1,6 @@
 package github.samblake.scalatest.page.example
 
-import github.samblake.scalatest.page.WebPage
-import github.samblake.scalatest.page.WebPage.{BaseUrl, ValidatedPage, ValidatingPage}
+import github.samblake.scalatest.page.WebPage.BaseUrl
 import org.openqa.selenium.WebDriver
 import org.scalatest.FlatSpec
 import org.scalatest.selenium.Chrome
@@ -17,6 +16,4 @@ class GoogleSpec extends FlatSpec with PageNavigation {
   implicit val baseUrl: BaseUrl = "http://www.google.com"
 
   val pages = new GooglePages()
-
-  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new ValidatedPage[T](webPage)
 }

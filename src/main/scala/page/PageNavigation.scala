@@ -1,7 +1,7 @@
 package page
 
-import github.samblake.scalatest.page.WebPage.ValidatingPage
 import github.samblake.scalatest.page.WebPage
+import github.samblake.scalatest.page.WebPage.{FailingPage, UnvalidatedPage, ValidatedPage, ValidatingPage}
 import org.openqa.selenium.WebDriver
 
 /**
@@ -19,4 +19,10 @@ trait PageNavigation {
       page validate
     }
   }
+
+  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new ValidatedPage[T](webPage)
+
+  def unvalidated[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new UnvalidatedPage[T](webPage)
+  def failing[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new FailingPage[T](webPage)
+
 }
