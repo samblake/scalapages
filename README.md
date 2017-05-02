@@ -14,6 +14,14 @@ Page specific logic is encapsulated in page specific classes. Actions to be perf
   } 
 ```
 
+### How To Run ###
+
+Clone the repo and run:
+
+```
+./gradlew test
+```
+
 ### To Do ###
 
 Scope Injection: boilerplate-free scope propagation à la [DSL Paradise](https://github.com/dsl-paradise/dsl-paradise).
