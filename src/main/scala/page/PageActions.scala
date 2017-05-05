@@ -6,7 +6,7 @@ import org.scalatest.exceptions.{StackDepthException, TestFailedException}
 import org.scalatest.selenium.WebBrowser
 
 /**
-  * Additional actions that can be mixed in to your Spec.
+  * Additional actions that can be mixed in to specs, not really related to page objects themselves.
   */
 trait PageActions {
 
@@ -32,8 +32,8 @@ trait PageActions {
       val buttons = findAll(tagName("button")).filter(e => e.underlying.getText.trim.equals(text))
       if (buttons.isEmpty) {
         throw new TestFailedException(
-          (_: StackDepthException) => Some("Button '" + text + "' not found."),
-          Some(new ElementNotVisibleException("Button '" + text + "' not found.")),
+          (_: StackDepthException) => Some("Button with text '" + text + "' not found."),
+          Some(new ElementNotVisibleException("Button with text '" + text + "' not found.")),
           pos
         )
       }

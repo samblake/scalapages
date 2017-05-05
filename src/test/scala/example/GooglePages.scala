@@ -21,7 +21,7 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
   def results(term: String) = new Results(term)
 
   /** The home page. */
-  class Home extends WebPage[Home] with ForwardingPage[Home] {
+  class Home extends ForwardingPage[Home] {
     override def path = "webhp"
 
     val searchField = "q"
@@ -44,7 +44,7 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
     * The search results page.
     * @param term The text entered into the search
     */
-  class Results(term: String) extends WebPage[Results] with ForwardingPage[Results] {
+  class Results(term: String) extends ForwardingPage[Results] {
     override def path = "webhp"
 
     /** Validates the page title is as expected. */
@@ -56,8 +56,8 @@ class GooglePages(implicit baseUrl: BaseUrl, webDriver: WebDriver) extends WebBr
   sealed trait Checkable
   object title extends Checkable
 
-  trait ForwardingPage[T <: WebPage[T]] {
-    self: WebPage[T] =>
+  trait ForwardingPage[T <: WebPage[T]] extends WebPage[T] {
+    self: T =>
 
     // May be forwarded to local version i.e. google.co.uk
     override def check()(implicit webDriver: WebDriver): Unit = currentUrl should include(path)

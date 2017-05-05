@@ -36,11 +36,14 @@ trait PageNavigation {
   }
 
   /** Return an unvalidated version of the [[WebPage]] */
-  def unvalidated[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new UnvalidatedPage[T](webPage)
+  def unvalidated[T <: WebPage[T]](webPage: T)(implicit driver: WebDriver, baseUrl: BaseUrl):ValidatingPage[T] = new UnvalidatedPage[T](webPage)
 
   /** Return a version of the [[WebPage]] who's validation is expected to fail */
-  def failing[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new FailingPage[T](webPage)
+  def failing[T <: WebPage[T]](webPage: T)(implicit driver: WebDriver, baseUrl: BaseUrl):ValidatingPage[T] = new FailingPage[T](webPage)
 
-  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T):ValidatingPage[T] = new ValidatedPage[T](webPage)
-  implicit def failable2ValidatingPage[T <: WebPage[T]](failable: Failable[T,_]):ValidatingPage[T] = failable.success
+  implicit def webPage2ValidatingPage[T <: WebPage[T]](webPage: T)
+    (implicit driver: WebDriver, baseUrl: BaseUrl):ValidatingPage[T] = new ValidatedPage[T](webPage)
+
+  implicit def failable2ValidatingPage[T <: WebPage[T]](failable: Failable[T,_])
+    (implicit driver: WebDriver, baseUrl: BaseUrl):ValidatingPage[T] = failable.success
 }
