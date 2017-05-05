@@ -1,6 +1,6 @@
 package github.samblake.scalatest.page
 
-import github.samblake.scalatest.page.WebPage.{BaseUrl, FailingPage, UnvalidatedPage, ValidatingPage}
+import github.samblake.scalatest.page.WebPage.{BaseUrl, FailingPage, RedirectingPage, UnvalidatedPage, ValidatingPage}
 import org.openqa.selenium.WebDriver
 import org.scalatest.Matchers
 import org.scalatest.concurrent.Eventually
@@ -53,6 +53,9 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
 
   /** Creates a [[FailingPage]] that expects validationperforms to fail. **/
   def failing(implicit webDriver: WebDriver):FailingPage[T] = new FailingPage[T](this)
+
+  /** Navigates to the current [[WebPage]] but expects a redirect to the [[page]] supplied. **/
+  def redirectingTo[P <: WebPage[P]](page: P)(implicit webDriver: WebDriver):ValidatingPage[P] = new RedirectingPage(this, page)
 }
 
 /**
@@ -114,6 +117,16 @@ object WebPage {
   /** Performs no validation. **/
   class UnvalidatedPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends ValidatingPage(webPage) {
     override def check(): Unit = Unit
+  }
+
+  /**
+    * Navigates to the [[from]] page's URL but checks the [[to]] page's URL.
+    * The [[to]] page is returned as the current page.
+    */
+  class RedirectingPage[F <: WebPage[F], T <: WebPage[T]](from: F, to: T)
+     (implicit baseUrl: BaseUrl, webDriver: WebDriver) extends ValidatingPage[T](to) {
+    override def url: String = from.url
+    override def check(): Unit = to.check()
   }
 
   def apply(baseUrl: BaseUrl, path: String): SimplePage = new SimplePage(path)(baseUrl)
