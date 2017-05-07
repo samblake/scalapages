@@ -54,7 +54,7 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
   /** Creates a [[FailingPage]] that expects validationperforms to fail. **/
   def failing(implicit webDriver: WebDriver):FailingPage[T] = new FailingPage[T](this)
 
-  /** Navigates to the current [[WebPage]] but expects a redirect to the [[page]] supplied. **/
+  /** Navigates to the current [[WebPage]] but expects a redirect to the [[scalapages]] supplied. **/
   def redirectingTo[P <: WebPage[P]](page: P)(implicit webDriver: WebDriver):ValidatingPage[P] = new RedirectingPage(this, page)
 }
 
@@ -145,7 +145,7 @@ object WebPage {
   /**
     * Models the base URL of the website being tested. Provides implicit conversion from
     * a [[String]]. Allows construction of pages with a full path via the [[apply]] and
-    * [[/]] methods. For example:
+    * [[/]] methods. For scalapages.example:
     *
     * {{{
     * "www.google.com"/"webhp"
@@ -189,11 +189,11 @@ trait Actionable[T <: WebPage[T]] {
 
 /**
   * Models the result of an action that results in the browser being forwarded to different pages
-  * depending on whether the action was sucessful or not. For example submission of a form that
+  * depending on whether the action was sucessful or not. For scalapages.example submission of a form that
   * returns the user to the originating page if validation fails.
   *
   * By default the Failable will be converted to the [[success]] [[WebPage]] by the implicit
-  * [[page.PageNavigation.failable2ValidatingPage]] function.
+  * [[scalapages.PageNavigation.failable2ValidatingPage]] function.
   *
   * @param success
   * @param failure

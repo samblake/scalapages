@@ -1,4 +1,4 @@
-package page
+package scalapages
 
 import github.samblake.scalatest.page.WebPage.{BaseUrl, FailingPage, SimplePage, UnvalidatedPage, ValidatedPage, ValidatingPage}
 import github.samblake.scalatest.page.{Failable, WebPage}

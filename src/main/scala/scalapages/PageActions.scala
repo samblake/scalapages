@@ -1,4 +1,4 @@
-package page
+package scalapages
 
 import org.openqa.selenium.{ElementNotVisibleException, WebDriver, WebElement}
 import org.scalactic.source
