@@ -40,12 +40,6 @@ test {
 
 test.doFirst {
     systemProperty 'webdriver.chrome.driver', ("bin/" + getChromeDriver())
-    ['config.file'].each { key ->
-        def value = System.getProperty(key)
-        if (value != null) {
-            systemProperty key, value
-        }
-    }
 }
 
 private String getChromeDriver() {
