@@ -1,7 +1,6 @@
 package scalapages
 
-import github.samblake.scalatest.page.WebPage.{BaseUrl, FailingPage, SimplePage, UnvalidatedPage, ValidatedPage, ValidatingPage}
-import github.samblake.scalatest.page.{Failable, WebPage}
+import scalapages.WebPage.{BaseUrl, FailingPage, SimplePage, UnvalidatedPage, ValidatedPage, ValidatingPage}
 import org.openqa.selenium.WebDriver
 
 /**

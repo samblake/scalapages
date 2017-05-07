@@ -1,7 +1,7 @@
-package github.samblake.scalatest.page.example
+package scalapages.example
 
-import github.samblake.scalatest.page.WebPage
-import github.samblake.scalatest.page.WebPage.BaseUrl
+import scalapages.WebPage
+import scalapages.WebPage.BaseUrl
 import org.openqa.selenium.WebDriver
 import org.scalatest.Assertion
 import org.scalatest.selenium.WebBrowser

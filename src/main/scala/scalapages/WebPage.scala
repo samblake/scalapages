@@ -1,6 +1,6 @@
-package github.samblake.scalatest.page
+package scalapages
 
-import github.samblake.scalatest.page.WebPage.{BaseUrl, FailingPage, RedirectingPage, UnvalidatedPage, ValidatingPage}
+import scalapages.WebPage.{BaseUrl, FailingPage, RedirectingPage, UnvalidatedPage, ValidatingPage}
 import org.openqa.selenium.WebDriver
 import org.scalatest.Matchers
 import org.scalatest.concurrent.Eventually
@@ -46,6 +46,12 @@ abstract class WebPage[T <: WebPage[T]](implicit baseUrl: BaseUrl) extends Page
     */
   def lastly(actions: T => Unit):Unit = actions(this)
 
+  /**
+    * Performs simple validation that the page navigated to is that page that was expected. By default this
+    * is done by checking that the URL in the browser starts with the URL defined for the page.
+    *
+    * This method is usually called by a [[ValidatingPage]].
+    */
   protected def check()(implicit webDriver: WebDriver):Unit = currentUrl should startWith (url)
 
   /** Creates an [[UnvalidatedPage]] that performs no validation. **/
@@ -69,27 +75,32 @@ object WebPage {
     * @param baseUrl The baseUrl of the page
     * @tparam T The type of the [[WebPage]]
     */
-  abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) {
+  abstract class ValidatingPage[T <: WebPage[T]](webPage: T)(implicit baseUrl: BaseUrl) extends Actionable[T] {
     def url: String = webPage.url
 
+    /** Performs validation against the [[webPage]], usually by calling the [[webPage.check()]]. */
     protected def check(): Unit
 
+    /**
+      * Performs validation against the [[webPage]] and returns it.
+      * @return
+      */
     def validate: T = {
       check()
       webPage
     }
 
-    def apply[P <: WebPage[P]](actions: T => ValidatingPage[P])(implicit webDriver: WebDriver):ValidatingPage[P] = {
+    override def apply[P <: WebPage[P]](actions: T => ValidatingPage[P])(implicit webDriver: WebDriver):ValidatingPage[P] = {
       check()
       webPage.apply(actions)
     }
 
-    def and[P <: WebPage[P]](actions: T => ValidatingPage[P])(implicit webDriver: WebDriver):ValidatingPage[P] = {
+    override def and[P <: WebPage[P]](actions: T => ValidatingPage[P])(implicit webDriver: WebDriver):ValidatingPage[P] = {
       check()
       webPage.and(actions)
     }
 
-    def lastly(actions: T => Unit):Unit = {
+    override def lastly(actions: T => Unit):Unit = {
       check()
       webPage.lastly(actions)
     }
@@ -129,8 +140,6 @@ object WebPage {
     override def check(): Unit = to.check()
   }
 
-  def apply(baseUrl: BaseUrl, path: String): SimplePage = new SimplePage(path)(baseUrl)
-
   /**
     * Creates a page with no additional logic. Can be used for navigating to new URLs
     * without having to declare new classes.
@@ -154,12 +163,17 @@ object WebPage {
     * @param baseUrl The base URL
     */
   implicit class BaseUrl(baseUrl: String) {
-    def apply(path: String): SimplePage = WebPage(this, path)
+    def apply(path: String): SimplePage = new SimplePage(path)(this)
     def / (path: String): SimplePage = apply(path)
     override def toString: String = baseUrl
   }
 }
 
+/**
+  * A trait that allows actiuons to be performed againts a [[WebPage]].
+  *
+  * @tparam T The [[WebPage]] action will be performed against
+  */
 trait Actionable[T <: WebPage[T]] {
 
   /**
@@ -195,7 +209,7 @@ trait Actionable[T <: WebPage[T]] {
   * By default the Failable will be converted to the [[success]] [[WebPage]] by the implicit
   * [[scalapages.PageNavigation.failable2ValidatingPage]] function.
   *
-  * @param success
-  * @param failure
+  * @param success The page that will be displayed on success
+  * @param failure The page that will be displayed on failure
   */
 case class Failable[S <: WebPage[S], F <: WebPage[F]](success: S, failure: F)

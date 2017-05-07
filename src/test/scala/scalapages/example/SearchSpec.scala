@@ -1,4 +1,4 @@
-package github.samblake.scalatest.page.example
+package scalapages.example
 
 /**
   * The scalapages.example from http://www.scalatest.org/user_guide/using_selenium reworked.
