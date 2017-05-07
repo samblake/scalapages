@@ -19,7 +19,7 @@ Page specific logic is encapsulated in page specific classes. Actions to be perf
 Clone the repo and run:
 
 ```
-./gradlew test
+sbt test
 ```
 
 ### To Do ###
