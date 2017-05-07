@@ -43,12 +43,21 @@ test {
 }
 
 test.doFirst {
-    def chromeDriver = System.getProperty("os.name").startsWith("Windows") ? "chromedriver.exe" : "chromedriver"
-    systemProperty 'webdriver.chrome.driver', ("bin/" + chromeDriver)
+    systemProperty 'webdriver.chrome.driver', ("bin/" + getChromeDriver())
     ['config.file'].each { key ->
         def value = System.getProperty(key)
         if (value != null) {
             systemProperty key, value
         }
+    }
+}
+
+private String getChromeDriver() {
+    if (org.gradle.internal.os.OperatingSystem.current().isWindows()) {
+        return "chromedriver.exe"
+    } else if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        return "chromedriver.mac"
+    } else {
+        return "chromedriver"
     }
 }
