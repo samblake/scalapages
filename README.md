@@ -1,6 +1,6 @@
-# Advanced ScalaTest Pages #
+# ScalaPages #
 
-Advanced page DSL for [ScalaTest](http://www.scalatest.org/) and [Selenium](http://www.scalatest.org/user_guide/using_selenium).
+A page object DSL for [ScalaTest](http://www.scalatest.org/) and [Selenium](http://www.scalatest.org/user_guide/using_selenium).
 
 Page specific logic is encapsulated in page specific classes. Actions to be performed on a page are scoped to blocks.
 
